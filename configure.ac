@@ -61,10 +61,10 @@ AM_CONDITIONAL([BUILD_WINDOWS], [test "$build_windows" = "yes"])
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_ENABLE([mysql],
-  [AS_HELP_STRING([--enable-mysql], [Enable MySQL support (use libmysqlclient) @<:@no@:>@])])
+  [AS_HELP_STRING([--enable-mysql], [Enable MySQL support (use libmysqlclient) @<:@yes@:>@])])
 
 AC_ARG_ENABLE([mysql-mariadb],
-  [AS_HELP_STRING([--enable-mysql-mariadb], [Enable MySQL support (use libmariadb) @<:@yes@:>@])],
+  [AS_HELP_STRING([--enable-mysql-mariadb], [Enable MySQL support (use libmariadb) @<:@no@:>@])],
   [enable_mysql_mariadb=$enableval],
   [enable_mysql_mariadb=no])
 
@@ -97,13 +97,13 @@ AS_IF([test "$enable_mysql" != "no"],
 AS_IF([test "$enable_mysql_mariadb" != "no"],
   [PKG_CHECK_MODULES([MARIADB],
     [libmariadb],
-    [enable_mysql=yes],
+    [enable_mysql_mariadb=yes],
     [AS_IF([test "$enable_mysql_mariadb" = "yes"],
       [AC_MSG_ERROR([libmariadb required, but not found.])],
       [enable_mysql=no])])])
 
 AS_IF([test "$enable_mysql" != "no"] && [test "$enable_mysql_mariadb" != "no"],
-  [AC_MSG_ERROR(["You cannot have both of 'enable_mysql' and 'enable_mysql_mariadb'!"])])
+  [AC_MSG_ERROR(["You cannot have both of '--enable-mysql' and '--enable-mysql-mariadb'!"])])
 
 AS_IF([test "$enable_odbc" != "no"],
   [PKG_CHECK_MODULES([ODBC],
@@ -220,3 +220,11 @@ AC_CONFIG_FILES([Makefile
                  runtime/libgixsql-sqlite/Makefile
 ])
 AC_OUTPUT
+
+
+echo "== Your configuration: =========="
+echo "mysql: $enable_mysql"
+echo "mysql (mariadb): $enable_mysql_mariadb"
+echo "odbc: $enable_odbc"
+echo "postgresql: $enable_pgsql"
+echo "================================="
